@@ -4,8 +4,6 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
-// Remove below once GET api/notes updated with FS mod
-const notesData = require('./db/db.json');
 
 // Sets up the Express App
 const app = express();
@@ -21,23 +19,25 @@ app.use(express.static(__dirname + '/public'));
 //* ===================================================
 //* Routes
 //* ===================================================
-//* HTML Routes
-
 // Route to notes.html
 app.get('/notes', function (req, res) {
     res.sendFile(path.join(__dirname, 'public/notes.html'));
 });
 
-// Route to index.html
-app.get('*', function (req, res) {
-    res.sendFile(path.join(__dirname, 'public/index.html'));
+// Displays all saved notes
+app.get('/api/notes', (req, res) => {
+    fs.readFile('db/db.json', 'utf8', (err, data) => {
+        if (err) {
+            throw err;
+        } else {
+            res.json(JSON.parse(data));
+        }
+    });
 });
 
-//* API GET Routes
-// Displays all notes
-//TODO: Update to use FS module to ensure dynamic response
-app.get('/api/notes', function (req, res) {
-    return res.json(notesData);
+// Route to index.html, using '*' as catchall for undefined routes to send to homepage
+app.get('*', function (req, res) {
+    res.sendFile(path.join(__dirname, 'public/index.html'));
 });
 
 //* API POST Routes
