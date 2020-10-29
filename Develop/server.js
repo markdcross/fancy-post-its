@@ -22,14 +22,15 @@ app.use(express.static(__dirname + '/public'));
 //* Routes
 //* ===================================================
 //* HTML Routes
-// Route to index.html
-app.get('/', function (req, res) {
-    res.sendFile(path.join(__dirname, 'public/index.html'));
-});
 
 // Route to notes.html
 app.get('/notes', function (req, res) {
     res.sendFile(path.join(__dirname, 'public/notes.html'));
+});
+
+// Route to index.html
+app.get('*', function (req, res) {
+    res.sendFile(path.join(__dirname, 'public/index.html'));
 });
 
 //* API GET Routes
