@@ -25,8 +25,8 @@ app.get('/notes', function (req, res) {
 });
 
 // Displays all saved notes
-app.get('/api/notes', (req, res) => {
-    fs.readFile('db/db.json', 'utf8', (err, data) => {
+app.get('/api/notes', function (req, res) {
+    fs.readFile('db/db.json', (err, data) => {
         if (err) {
             throw err;
         } else {
@@ -42,6 +42,18 @@ app.get('*', function (req, res) {
 
 //* API POST Routes
 //TODO: POST `/api/notes` - Should receive a new note to save on the request body, add it to the `db.json` file, and then return the new note to the client.
+app.post('/api/notes', function (req, res) {
+    let newNote = {
+        title: req.body.title,
+        text: req.body.text,
+    };
+    let noteList = JSON.parse(fs.readFileSync('db/db.json'));
+    noteList.push(newNote);
+    let newNoteList = JSON.stringify(noteList);
+    fs.writeFileSync('db/db.json', newNoteList);
+    res.send(`Title: ${newNote.title}
+    Note: ${newNote.text}`);
+});
 
 //* API DELETE Routes
 //TODO: DELETE `/api/notes/:id` - Should receive a query parameter containing the id of a note to delete.
