@@ -1,7 +1,7 @@
 //* ===================================================
 //* Dependencies
 //* ===================================================
-const path = require('path');
+const fs = require('fs');
 const uuid = require('uuid');
 
 //* ===================================================
@@ -29,12 +29,19 @@ module.exports = function (app) {
         };
 
         // Convert current list of notes from JSON to an array, add the new note, convert back to JSON, and update db.json
-        let noteList = JSON.parse(fs.readFileSync('db/db.json'));
-        noteList.push(newNote);
-        let newNoteList = JSON.stringify(noteList);
-        fs.writeFileSync('db/db.json', newNoteList);
-        // Send response
-        res.json(newNote);
+        fs.readFile('./db/db.json', (err, data) => {
+            let parsedNotes = JSON.parse(data);
+            parsedNotes.push(newNote);
+            fs.writeFile('./db/db.json', JSON.stringify(parsedNotes), function (
+                err,
+                res
+            ) {
+                if (err) {
+                    throw err;
+                }
+            });
+            res.send(newNote);
+        });
     });
 
     // API DELETE Route
