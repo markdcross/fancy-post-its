@@ -19,11 +19,6 @@ app.use(express.static(__dirname + '/public'));
 //* ===================================================
 //* Routes
 //* ===================================================
-// Route to notes.html
-app.get('/notes', function (req, res) {
-    res.sendFile(path.join(__dirname, 'public/notes.html'));
-});
-
 // Displays all saved notes
 app.get('/api/notes', function (req, res) {
     fs.readFile('db/db.json', (err, data) => {
@@ -35,12 +30,9 @@ app.get('/api/notes', function (req, res) {
     });
 });
 
-// Route to index.html, using '*' as catchall for undefined routes to send to homepage
-app.get('*', function (req, res) {
-    res.sendFile(path.join(__dirname, 'public/index.html'));
-});
 
-//* API POST Routes
+
+// API POST Route
 app.post('/api/notes', function (req, res) {
     // Capture user input
     let newNote = {
@@ -53,16 +45,11 @@ app.post('/api/notes', function (req, res) {
     noteList.push(newNote);
     let newNoteList = JSON.stringify(noteList);
     fs.writeFileSync('db/db.json', newNoteList);
-
     // Send response
     res.json(newNote);
-
-    // Send response
-    // res.send(`Title: ${newNote.title}
-    // Note: ${newNote.text}`);
 });
 
-//* API DELETE Routes
+// API DELETE Route
 //TODO: DELETE `/api/notes/:id` - Should receive a query parameter containing the id of a note to delete.
 //TODO: This means you'll need to find a way to give each note a unique `id` when it's saved.
 //TODO: In order to delete a note, you'll need to read all notes from the `db.json` file, remove the note with the given `id` property, and then rewrite the notes to the `db.json` file.
