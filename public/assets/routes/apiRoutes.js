@@ -19,7 +19,7 @@ module.exports = function (app) {
         });
     });
 
-    // POST route for new note
+    // POST new note
     app.post('/api/notes', function (req, res) {
         // Capture user input
         let newNote = {
@@ -27,11 +27,13 @@ module.exports = function (app) {
             text: req.body.text,
             id: uuid.v4(),
         };
-
-        // Convert current list of notes from JSON to an array, add the new note, convert back to JSON, and update db.json
+        // Access current list of notes
         fs.readFile('./db/db.json', (err, data) => {
+            // Convert current list of notes from JSON to an array
             let parsedNotes = JSON.parse(data);
+            // add the new note
             parsedNotes.push(newNote);
+            // Convert back to JSON and update db.json
             fs.writeFile('./db/db.json', JSON.stringify(parsedNotes), function (
                 err,
                 res
@@ -40,13 +42,35 @@ module.exports = function (app) {
                     throw err;
                 }
             });
+            // Send response to the client
             res.send(newNote);
         });
     });
 
-    // API DELETE Route
-    //TODO: DELETE `/api/notes/:id` - Should receive a query parameter containing the id of a note to delete.
-    //TODO: This means you'll need to find a way to give each note a unique `id` when it's saved.
-    //TODO: In order to delete a note, you'll need to read all notes from the `db.json` file, remove the note with the given `id` property, and then rewrite the notes to the `db.json` file.
-    // read all notes, parse to array, iterate through the array and assign the id as [i]?
+    // DELETE note
+    app.delete('/api/notes/:id', function (req, res) {
+        // Access current list of notes
+
+        fs.readFile('./db/db.json', (err, data) => {
+            // Convert current list of notes from JSON to an array
+
+            let parsedNotes = JSON.parse(data);
+
+            // Use .filter to create a new array excluding the selected note
+            let newNotesArr = parsedNotes.filter(
+                (note) => note.id !== req.params.id
+            );
+            // Convert the new array back to JSON and update db.json
+
+            fs.writeFile('./db/db.json', JSON.stringify(newNotesArr), function (
+                err,
+                res
+            ) {
+                if (err) {
+                    throw err;
+                }
+            });
+        });
+        res.send('Note deleted');
+    });
 };
